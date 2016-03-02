@@ -61,7 +61,7 @@ double vectorNorm(const column v)
 	{
 		res += v[i]*v[i];
 	}
-	return sqrt(res);
+	return sqrt(fabs(res));
 }
 
 column vectorDivisionByScalar(const column v, const double scalar)
@@ -69,7 +69,14 @@ column vectorDivisionByScalar(const column v, const double scalar)
 	column res = v;
 	for(int i = 0; i < v.size(); i++)
 	{
-		res[i] = double(v[i]) / double(scalar);
+		if(scalar == 0)
+		{
+			res[i] = 0;
+		}
+		else
+		{
+			res[i] = double(v[i]) / double(scalar);
+		}
 	}
 	return res;
 }
