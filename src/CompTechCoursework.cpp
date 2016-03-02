@@ -3,6 +3,9 @@
 #include <time.h>
 #include <stdlib.h>
 #include "MatrixUtils.h"
+#include <limits>
+#include <cmath>
+#include <fstream>
 
 using namespace std;
 
@@ -10,7 +13,7 @@ using namespace std;
 
 #define MAX 10
 #define MIN 0
-#define DIMENSION 3
+#define DIMENSION 2
 
 void printMatrix(matrix m) {
 	int row = 0;
@@ -18,7 +21,10 @@ void printMatrix(matrix m) {
 	{
 		for (matrix::iterator it = m.begin(); it != m.end(); ++it) {
 			column c = (*it);
-			cout << "   " << c[i] << "   ";
+			//round to 7 decimal points
+			double precision = 10000000.0;
+			double val = round( c[i] * precision) / precision;
+			cout << "       " << val << "       ";
 		}
 		cout << endl;
 	}
@@ -56,22 +62,56 @@ void decompose(matrix u, matrix &q, matrix &r)
 		q[i] = u[i];
 		for (int j = 0; j < i; j++)
 		{
-			// r[i,j] = q[i]T u[i]
-			r[j][i] = vectorMultiply(q[j], u[i]);
+			// r[j,i] = q[j]T u[i]
+			r[i][j] = vectorMultiply(q[j], u[i]);
 			//q[i] = q[i] - r[j,i]*q[j]
-			q[i] = vectorSubtraction(q[i], vectorMultiplyByScalar(q[j], r[j][i]));
+			q[i] = vectorSubtraction(q[i], vectorMultiplyByScalar(q[j], r[i][j]));
 		}
 		//r[i][i] = ||q[i]||;
 		r[i][i] = vectorNorm(q[i]);
 		//q[i] = q[i] / r[i,i];
-		q[i] = vectorDivision(q[i], r[i][i]);
+		q[i] = vectorDivisionByScalar(q[i], r[i][i]);
 	}
+}
+#define LIMIT 0.00000000001
+matrix qrIteration(matrix a, vector<matrix> &qk)
+{
+	matrix q(DIMENSION, column(DIMENSION));
+	matrix r(DIMENSION, column(DIMENSION));
+	decompose(a,q,r);
+	qk.push_back(q);
+	if(fabs(a[0][DIMENSION-1]) < LIMIT && fabs(a[DIMENSION-1][0]) < LIMIT	 )
+	{
+		return a;
+	}
+	return qrIteration(matrixMultiply(r,q), qk);
+}
+
+vector<float> getEigenValues(matrix m)
+{
+	vector<float> res;
+	for(int i = 0; i < m.size(); i++)
+	{
+		res.push_back(m[i][i]);
+	}
+	return res;
+}
+
+matrix getEigenVectors(vector<matrix> qk)
+{
+	matrix res = qk[0];
+	for(int i = 1; i < qk.size(); i++)
+	{
+		res = matrixMultiply(qk[i], res);
+	}
+	return res;
 }
 
 int main() {
 srand(time(NULL));
 matrix m(DIMENSION, column(DIMENSION));
 m = getRandomSymmetric();
+/*
 m[0][0] = 1;
 m[0][1] = 0;
 m[0][2] = 1;
@@ -83,14 +123,39 @@ m[1][2] = 0;
 m[2][0] = 2;
 m[2][1] = 1;
 m[2][2] = 0;
+*/
+
+m[0][0] = 7;
+m[0][1] = 2;
+m[1][0] = 2;
+m[1][1] = 4;
+
 matrix q(DIMENSION, column(DIMENSION));
 matrix r(DIMENSION, column(DIMENSION));
 decompose(m,q,r);
 printMatrix(m);
-cout << "---------" << endl;
+cout << "Q:-----------" << endl;
 printMatrix(q);
-cout << "---------" << endl;
+cout << "R:---------" << endl;
 printMatrix(r);
+cout << "Iteration:---------" << endl;
+vector<matrix> qk;
+matrix eigenValuesMatrix = qrIteration(m, qk);
+printMatrix(eigenValuesMatrix);
+cout << "eigenVectors:---------" << endl;
+matrix eigenVectors = getEigenVectors(qk);
+printMatrix(eigenVectors);
+cout << "eigenValues:---------" << endl;
+
+ofstream outputFile;
+outputFile.open("results.txt");
+vector<float> eigenValues = getEigenValues(eigenValuesMatrix);
+for(int i = 0; i < eigenValues.size(); i++)
+{
+	outputFile << eigenValues[i] << endl;
+}
+
+
 return 0;
 }
 
