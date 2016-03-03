@@ -1,9 +1,25 @@
 #include "MatrixUtils.h"
-#include <stdlib.h>
+
 #include <assert.h>
 #include <math.h>
+#include <iostream>
+#include <iterator>
 
 using namespace std;
+
+
+void printMatrix(matrix m) {
+	for (int i = 0; i < m.size(); i++) {
+		for (matrix::iterator it = m.begin(); it != m.end(); ++it) {
+			column c = (*it);
+			//round to 7 decimal points
+			double precision = 10000000.0;
+			double val = round(c[i] * precision) / precision;
+			cout << "       " << val << "       ";
+		}
+		cout << endl;
+	}
+}
 
 matrix matrixMultiply(const matrix m1, const matrix m2)
 {

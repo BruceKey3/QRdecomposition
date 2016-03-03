@@ -1,30 +1,19 @@
-#include <iostream>
-#include <vector>
-#include <time.h>
 #include <stdlib.h>
-#include "MatrixUtils.h"
-#include <limits>
 #include <cmath>
+#include <ctime>
 #include <fstream>
+#include <iostream>
+#include <iterator>
+#include <vector>
+
+#include "MatrixUtils.h"
 
 using namespace std;
 
 #define MAX 10
 #define MIN 0
-#define DIMENSION 3
+#define DIMENSION 4
 
-void printMatrix(matrix m) {
-	for (int i = 0; i < m.size(); i++) {
-		for (matrix::iterator it = m.begin(); it != m.end(); ++it) {
-			column c = (*it);
-			//round to 7 decimal points
-			double precision = 10000000.0;
-			double val = round(c[i] * precision) / precision;
-			cout << "       " << val << "       ";
-		}
-		cout << endl;
-	}
-}
 
 /* Get a random float between min and max */
 double getRandomNumber(double min, double max) {
@@ -65,10 +54,27 @@ void decompose(matrix u, matrix &q, matrix &r) {
 		q[i] = vectorDivisionByScalar(q[i], r[i][i]);
 	}
 }
-#define LIMIT (0.0000000000000000000000000001)
+
+#define LIMIT (0.00000001)
+
+bool isNearlyDiagonal(matrix a)
+{
+	for(int i = 0; i < a.size(); i++)
+	{
+		for(int j = 0; j < i; j++)
+		{
+			if(fabs(a[i][j]) >= LIMIT && fabs(a[j][i]) >= LIMIT)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 matrix qrIteration(matrix a, vector<matrix> &qk) {
-	while (fabs(a[0][DIMENSION - 1]) >= LIMIT
-			&& fabs(a[DIMENSION - 1][0]) >= LIMIT) {
+	while(!isNearlyDiagonal(a))
+	{
 		matrix q(a.size(), column(a.size()));
 		matrix r(a.size(), column(a.size()));
 		decompose(a, q, r);
@@ -97,22 +103,9 @@ matrix getEigenVectors(vector<matrix> qk) {
 int main() {
 	srand(time(NULL));
 	matrix m(DIMENSION, column(DIMENSION));
-
 	m = getRandomSymmetric(DIMENSION);
-	printMatrix(m);
-/*
-	m[0][0] = 1;
-	m[0][1] = 1;
-	m[0][2] = 1;
+    printMatrix(m);
 
-	m[1][0] = 1;
-	m[1][1] = 1;
-	m[1][2] = 1;
-
-	m[2][0] = 1;
-	m[2][1] = 1;
-	m[2][2] = 1;
-*/
 	vector<matrix> qk;
 	matrix eigenValuesMatrix = qrIteration(m, qk);
 
@@ -127,8 +120,8 @@ int main() {
 	outputFile << endl;
 
 	outputFile << "eigenVectors: " << endl;
+	outputFile << "NOTE: Read each column as an eigenvector." << endl;
 	matrix eigenVectors = getEigenVectors(qk);
-
 	for (int i = 0; i < DIMENSION; i++) {
 		for (matrix::iterator it = eigenVectors.begin();
 				it != eigenVectors.end(); ++it) {
@@ -140,6 +133,7 @@ int main() {
 		}
 		outputFile << endl;
 	}
+	outputFile.close();
 
 	return 0;
 }
