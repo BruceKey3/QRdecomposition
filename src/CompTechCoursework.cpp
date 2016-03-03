@@ -89,7 +89,7 @@ vector<float> getEigenValues(matrix m) {
 matrix getEigenVectors(vector<matrix> qk) {
 	matrix res = qk[0];
 	for (int i = 1; i < qk.size(); i++) {
-		res = matrixMultiply(qk[i], res);
+		res = matrixMultiply(res, qk[i]);
 	}
 	return res;
 }
@@ -99,7 +99,8 @@ int main() {
 	matrix m(DIMENSION, column(DIMENSION));
 
 	m = getRandomSymmetric(DIMENSION);
-
+	printMatrix(m);
+/*
 	m[0][0] = 1;
 	m[0][1] = 1;
 	m[0][2] = 1;
@@ -111,7 +112,7 @@ int main() {
 	m[2][0] = 1;
 	m[2][1] = 1;
 	m[2][2] = 1;
-
+*/
 	vector<matrix> qk;
 	matrix eigenValuesMatrix = qrIteration(m, qk);
 
