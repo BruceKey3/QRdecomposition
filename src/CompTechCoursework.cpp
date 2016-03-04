@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iomanip>
 
 #include "MatrixUtils.h"
 
@@ -21,25 +22,32 @@ static int dimension = DIMENSION;
 matrix readFromFile(char *fileName) {
 	ifstream inputFile(fileName);
 	string line;
-	string sub = " \n";
 	if (inputFile.is_open()) {
-		int row = 0;
-		getline(inputFile, line);
-		dimension = (line.length() + 1) / 2;
-		matrix res(dimension, column(dimension));
-		do{
+		vector<float> temp;
+		while(getline(inputFile, line))
+		{
+
 			istringstream iss(line);
-			for(int i = 0; i < dimension; i++)
+			float sub;
+			while(iss >> sub)
 			{
-				iss >> sub;
-				res[i][row] = stof(sub);
+			  temp.push_back(sub);
 			}
-			row++;
-		} while(getline(inputFile, line));
+		}
+		dimension = sqrt(temp.size());
+		matrix res(dimension, column(dimension));
+		for(int i = 0; i < dimension; i++)
+		{
+			for(int j = 0; j < dimension; j++)
+			{
+				res[j][i] = temp[j*dimension + i];
+			}
+		}
 		return res;
 	}
 	exit(-1);
-;
+
+
 }
 
 /* Get a random float between min and max */
