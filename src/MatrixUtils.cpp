@@ -15,7 +15,7 @@ void printMatrix(matrix m) {
 			//round to 7 decimal points
 			double precision = 10000000.0;
 			double val = round(c[i] * precision) / precision;
-			cout << "       " << val << "       ";
+			cout << "\t" << val << "\t";
 		}
 		cout << endl;
 	}

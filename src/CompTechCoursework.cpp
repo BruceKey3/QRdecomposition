@@ -40,7 +40,7 @@ matrix readFromFile(char *fileName) {
 		{
 			for(int j = 0; j < dimension; j++)
 			{
-				res[j][i] = temp[j*dimension + i];
+				res[i][j] = temp[j*dimension + i];
 			}
 		}
 		return res;
@@ -140,7 +140,14 @@ int main(int argc, char** argv) {
 		m = getRandomSymmetric(m.size());
 	}
 	printMatrix(m);
-
+	matrix q(m.size(), column(m.size()));
+	matrix r(m.size(), column(m.size()));
+	decompose(m, q, r);
+	cout << endl;
+	printMatrix(q);
+	cout << endl;
+	printMatrix(r);
+	/*
 	vector<matrix> qk;
 	matrix eigenValuesMatrix = qrIteration(m, qk);
 
@@ -169,7 +176,7 @@ int main(int argc, char** argv) {
 		outputFile << endl;
 	}
 	outputFile.close();
-
+	*/
 	return 0;
 }
 
