@@ -7,7 +7,7 @@
 
 using namespace std;
 
-
+/* Print a matrix to stdout */
 void printMatrix(matrix m) {
 	for (int i = 0; i < m.size(); i++) {
 		for (matrix::iterator it = m.begin(); it != m.end(); ++it) {
@@ -21,6 +21,7 @@ void printMatrix(matrix m) {
 	}
 }
 
+/* Multiply m1 by m2 */
 matrix matrixMultiply(const matrix m1, const matrix m2)
 {
 	assert(m1.size() == m2[0].size());
@@ -38,6 +39,7 @@ matrix matrixMultiply(const matrix m1, const matrix m2)
 	return res;
 }
 
+/* (v1)T * v2 */
 double vectorMultiply(const column v1,const column v2)
 {
 	assert(v1.size() == v2.size());
@@ -49,6 +51,7 @@ double vectorMultiply(const column v1,const column v2)
 	return res;
 }
 
+/* x*V1 where x is a scalar */
 column vectorMultiplyByScalar(const column v,const double scalar)
 {
 	column res = v;
@@ -59,6 +62,7 @@ column vectorMultiplyByScalar(const column v,const double scalar)
 	return res;
 }
 
+/* V1 - V2 */
 column vectorSubtraction(const column v1,const column v2)
 {
 	assert(v1.size() == v2.size());
@@ -70,6 +74,7 @@ column vectorSubtraction(const column v1,const column v2)
 	return res;
 }
 
+/* Euclidean norm of v */
 double vectorNorm(const column v)
 {
 	double res = 0;
@@ -80,11 +85,13 @@ double vectorNorm(const column v)
 	return sqrt(fabs(res));
 }
 
+/* v / x where x is a scalar */
 column vectorDivisionByScalar(const column v, const double scalar)
 {
 	column res = v;
 	for(int i = 0; i < v.size(); i++)
 	{
+		// Avoid division by 0
 		if(scalar == 0)
 		{
 			res[i] = 0;

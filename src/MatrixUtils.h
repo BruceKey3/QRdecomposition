@@ -4,9 +4,12 @@
 #include <vector>
 #include <stdlib.h>
 
+/* Column as vector of doubles */
 typedef std::vector<double> column;
+/* Matrix as vector of columns */
 typedef std::vector<column> matrix;
 
+/* Prototypes */
 void printMatrix(matrix);
 matrix matrixMultiply(const matrix, const matrix);
 double vectorMultiply(const column, const column);
